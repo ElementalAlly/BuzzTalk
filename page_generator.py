@@ -11,6 +11,14 @@ class Post(BaseModel):
     body: str
     replies: []
 
+def page_w_content(content: str, channels: List[str]):
+    channel_list = ""
+    for channel in channels:
+        channel_list += f"<a href='/channel/{channel}'>{channel}</a>"
+    with open("HTML_templates\\base.txt") as f:
+        html_content = f.read().format(content = content, channels = channel_list)
+    return HTMLResponse(content=html_content, status_code=200)
+
 def traverse_post(post: Post, layer: int, channel: str):
     result = ""
     if layer == 0:
@@ -26,11 +34,11 @@ def traverse_post(post: Post, layer: int, channel: str):
     return result
 
 
-def generate_posts_page(db: List[Post], channel: str):
+def generate_posts_page(db: List[Post], channel: str, channels: List[str]):
     posts_html = ""
     for post in reversed(db):  # Show new posts at the top
         posts_html += traverse_post(post, 0, channel)
 
     with open("HTML_templates\\post_w_comments.txt") as f:
-        html_content = f.read().format(channel = channel, posts_html = posts_html)
-    return HTMLResponse(content=html_content, status_code=200)
+        page_content = f.read().format(channel = channel, posts_html = posts_html)
+    return page_w_content(page_content, channels=channels)
