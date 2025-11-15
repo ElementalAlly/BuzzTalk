@@ -1,0 +1,143 @@
+<html>
+    <head>
+        <title>My FastAPI Forum</title>
+        <style>
+            body {{ font-family: sans-serif; margin: 2em; }}
+            input, textarea {{ width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box; }}
+            button {{ padding: 10px 15px; background-color: #007BFF; color: white; border: none; cursor: pointer; }}
+            button:hover {{ background-color: #0056b3; }}
+            /* ------------------------------ */
+            /* TOP NAVIGATION BAR            */
+            /* ------------------------------ */
+            .navbar {{
+                width: 100%;
+                background-color: #ffffff;
+                height: 56px;
+                display: flex;
+                align-items: center;
+                padding: 0 16px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 1000;
+            }}
+
+            .navbar-logo {{
+                font-size: 20px;
+                font-weight: bold;
+                margin-right: auto;
+            }}
+
+            .menu-button {{
+                font-size: 24px;
+                cursor: pointer;
+                border: none;
+                background: none;
+            }}
+
+            /* ------------------------------ */
+            /* SIDEBAR                       */
+            /* ------------------------------ */
+            .sidebar {{
+                position: fixed;
+                top: 56px; /* below nav bar */
+                left: 0;
+                width: 0;
+                height: 100%;
+                background-color: #ffffff;
+                overflow-x: hidden;
+                transition: width 0.3s ease;
+                border-right: 1px solid #ccc;
+                padding-top: 20px;
+                z-index: 999;
+            }}
+
+            .sidebar.open {{
+                width: 250px;
+            }}
+
+            .sidebar a {{
+                display: block;
+                padding: 12px 20px;
+                text-decoration: none;
+                color: #333;
+                font-size: 16px;
+            }}
+
+            .sidebar a:hover {{
+                background-color: #f0f0f0;
+            }}
+                channel = None
+        </style>
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+    </head>
+    <body>
+        <!-- =========================== -->
+        <!-- TOP NAVIGATION BAR          -->
+        <!-- =========================== -->
+        <div class="navbar">
+            <div class="navbar-logo">MyLogo</div>
+            <button class="menu-button" id="menuButton">&#9776;</button>
+        </div>
+
+        <!-- =========================== -->
+        <!-- SIDEBAR                      -->
+        <!-- =========================== -->
+        <div class="sidebar" id="sidebar">
+            <a href="#">Home</a>
+            <a href="#">Profile</a>
+            <a href="#">Messages</a>
+            <a href="#">Settings</a>
+        </div>
+
+        <!-- main page content -->
+    
+        <h1>Welcome to My Forum</h1>
+        <h2>Create a New Post in {channel}</h2>
+        <form action="/api/posts?channel={channel}" method="post">
+            <input type="text" name="title" placeholder="Post Title" required><br>
+            <textarea name="content" rows="4" placeholder="Post Content" required></textarea><br>
+            <button type="submit">Post</button>
+        </form>
+        <hr>
+        <h2>Post List: {channel}</h2>
+        {posts_html}
+        <script>
+            // Find all reply buttons
+            const replyButtons = document.querySelectorAll('.reply-button');
+
+            replyButtons.forEach(button => {{
+                const comment = button.closest('.comment');
+                const replyBox = comment.querySelector('.reply-box');
+                const cancelButton = comment.querySelector('.cancel');
+
+                // Toggle the reply box when clicking "Reply"
+                button.addEventListener('click', () => {{
+                    const isVisible = replyBox.style.display === 'block';
+                    replyBox.style.display = isVisible ? 'none' : 'block';
+                }});
+
+                // Hide it when clicking "Cancel"
+                cancelButton.addEventListener('click', () => {{
+                    replyBox.style.display = 'none';
+                }});
+            }});
+        </script>
+
+        <script>
+            /* ------------------------------ */
+            /* SIDEBAR TOGGLE LOGIC          */
+            /* ------------------------------ */
+            const menuButton = document.getElementById('menuButton');
+            const sidebar = document.getElementById('sidebar');
+
+            menuButton.onclick = () => {{
+            sidebar.classList.toggle('open');
+            }};
+        </script>
+    </body>
+</html>
