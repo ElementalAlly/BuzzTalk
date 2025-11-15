@@ -96,10 +96,7 @@
         <!-- =========================== -->
         <div class="sidebar" id="sidebar">
             {channels}
-            <a href="#">Home</a>
-            <a href="#">Profile</a>
-            <a href="#">Messages</a>
-            <a href="#">Settings</a>
+            <a href="/make_channel">new channel</a>
         </div>
 
         <!-- main page content -->

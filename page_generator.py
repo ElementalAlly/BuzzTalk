@@ -33,6 +33,10 @@ def traverse_post(post: Post, layer: int, channel: str):
     result  = result + "</div>"
     return result
 
+def process_channel(channel: str):
+    with open("HTML_templates\\channel_listing.txt") as f:
+        result = f.read().format(channel = channel)
+    return result
 
 def generate_posts_page(db: List[Post], channel: str, channels: List[str]):
     posts_html = ""
@@ -42,3 +46,12 @@ def generate_posts_page(db: List[Post], channel: str, channels: List[str]):
     with open("HTML_templates\\post_w_comments.txt") as f:
         page_content = f.read().format(channel = channel, posts_html = posts_html)
     return page_w_content(page_content, channels=channels)
+
+def generate_channels_page(channels: List[str], server: str = "woodruff"):
+    channels_html = ""
+    for channel in channels:
+        channels_html += process_channel(channel)
+
+    with open("HTML_templates\\make_channel.txt") as f:
+        page_content = f.read().format(server = server, channels_html = channels_html)
+    return page_w_content(page_content, channels = channels)

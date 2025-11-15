@@ -1,0 +1,9 @@
+<h1>Make a new channel in server: {server}</h1>
+<form action="/api/channel" method="post">
+    <input type="text" name="name" placeholder="Channel Title" required><br>
+    <textarea name="description" rows="4" placeholder="Channel Description" required></textarea><br>
+    <button type="submit">Make Channel!</button>
+</form>
+<hr>
+<h2>Channel list: {server}</h2>
+{channels_html}

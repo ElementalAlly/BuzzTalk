@@ -88,19 +88,20 @@ def make_post(parent_id: int, username: str, title: str, body: str, channel: str
             cursor.execute(query)
         connection.commit()
 
-def generate_html_response(channel: str):
-    if channel == None:
-        channel = "None"
-    db = get_posts(0, channel)
-    return page_generator.generate_posts_page(db, channel, get_channels())
-
 @app.get("/", response_class=RedirectResponse)
 def read_root():
     return "/channel/general"
 
 @app.get("/channel/{channel_name}")
 async def view_posts(channel_name: str):
-    return generate_html_response(channel_name)
+    if channel_name == None:
+        channel_name = "general"
+    db = get_posts(0, channel_name)
+    return page_generator.generate_posts_page(db, channel_name, get_channels())
+
+@app.get("/make_channel", response_class=HTMLResponse)
+async def get_channels_page(server: str = "woodruff"):
+    return page_generator.generate_channels_page(get_channels())
 
 @app.post("/api/posts")
 def create_post(channel: str = None, title: str = Form(...), content: str = Form(...)):
