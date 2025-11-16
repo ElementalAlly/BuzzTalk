@@ -6,6 +6,7 @@ class Post(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
     id: int
     parent_id: int
+    channel: str
     username: str
     title: str
     body: str
@@ -54,4 +55,15 @@ def generate_channels_page(channels: List[str], server: str = "woodruff"):
 
     with open("HTML_templates\\make_channel.txt") as f:
         page_content = f.read().format(server = server, channels_html = channels_html)
+    return page_w_content(page_content, channels = channels)
+
+def generate_post_focus_page(post: Post, channel: str, channels: List[str]):
+    with open("HTML_templates\\post_focus.txt") as f:
+        page_content = f.read()
+    
+    posts_html = ""
+    for _post in reversed(post.replies):
+        posts_html = posts_html + traverse_post(_post, 1, channel)
+    page_content = page_content.format(title = post.title, id = post.id, body=post.body, channel=channel, posts_html=posts_html)
+
     return page_w_content(page_content, channels = channels)

@@ -1,0 +1,36 @@
+<div class="comment">
+    <h1>{title} (ID: {id})</h1>
+    <p>{body}</p>
+    <button class="reply-button">Reply</button>
+    <div class="reply-box" style="display: none;">
+        <form action="/api/reply?reply_id={id}&channel={channel}", method="post">
+            <textarea name="reply" rows="4" placeholder="Post Reply" required></textarea><br>
+            <button type="submit">Post</button>
+        </form>
+        <button class="cancel">Cancel</button>
+    </div>
+</div>
+<hr>
+<h2>Replies:</h2>
+{posts_html}
+<script>
+    // Find all reply buttons
+    const replyButtons = document.querySelectorAll('.reply-button');
+
+    replyButtons.forEach(button => {{
+        const comment = button.closest('.comment');
+        const replyBox = comment.querySelector('.reply-box');
+        const cancelButton = comment.querySelector('.cancel');
+
+        // Toggle the reply box when clicking "Reply"
+        button.addEventListener('click', () => {{
+            const isVisible = replyBox.style.display === 'block';
+            replyBox.style.display = isVisible ? 'none' : 'block';
+        }});
+
+        // Hide it when clicking "Cancel"
+        cancelButton.addEventListener('click', () => {{
+            replyBox.style.display = 'none';
+        }});
+    }});
+</script>

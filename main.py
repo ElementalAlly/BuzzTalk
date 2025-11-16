@@ -11,6 +11,7 @@ class Post(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
     id: int
     parent_id: int
+    channel: str
     username: str
     title: str
     body: str
@@ -23,6 +24,38 @@ load_dotenv()
 
 LOCAL_USER = os.getenv("user")
 LOCAL_PASSWORD = os.getenv("password")
+
+def get_post(id: int) -> Post:
+    post_id_ind = 0
+    parent_id_ind = 1
+    channel_ind = 2
+    username_ind = 3
+    post_time_ind = 4
+    title_ind = 5
+    body_ind = 6
+    connection = pymysql.connect(host="localhost",
+                                 user=LOCAL_USER,
+                                 password=LOCAL_PASSWORD,
+                                 database="BuzzTalk")
+    with connection:
+        with connection.cursor() as cursor:
+            query = f"""SELECT * FROM woodruff
+            WHERE post_id = {id};"""
+            cursor.execute(query)
+            raw_data = list(cursor.fetchall())
+
+    result: Post = None
+    if len(raw_data) > 0:
+        entry = raw_data[0]
+        result = Post(id=entry[post_id_ind],
+                           parent_id=entry[parent_id_ind],
+                           channel=entry[channel_ind],
+                           username=entry[username_ind],
+                           title=entry[title_ind],
+                           body=entry[body_ind],
+                           replies=get_posts(entry[post_id_ind], entry[channel_ind]))
+
+    return result
 
 def get_posts(parent: int, channel: str) -> List[Post]:
     post_id_ind = 0
@@ -47,6 +80,7 @@ def get_posts(parent: int, channel: str) -> List[Post]:
     for entry in raw_data:
         result.append(Post(id=entry[post_id_ind],
                            parent_id=entry[parent_id_ind],
+                           channel=entry[channel_ind],
                            username=entry[username_ind],
                            title=entry[title_ind],
                            body=entry[body_ind],
@@ -101,6 +135,10 @@ def make_channel(name: str, description: str):
             cursor.execute(query)
         connection.commit()
 
+def trace_root(post: Post) -> int:
+    while post.parent_id != 0:
+        post = get_post(post.parent_id)
+    return post.id
 
 @app.get("/", response_class=RedirectResponse)
 def read_root():
@@ -115,6 +153,13 @@ async def view_posts(channel_name: str):
     db = get_posts(0, channel_name)
     return page_generator.generate_posts_page(db, channel_name, get_channels())
 
+@app.get("/post/{id}")
+async def view_post(id: int):
+    post: Post = get_post(id)
+    if post == None:
+        return HTMLResponse(status_code=404)
+    return page_generator.generate_post_focus_page(post, post.channel, get_channels())
+
 @app.get("/make_channel", response_class=HTMLResponse)
 async def get_channels_page(server: str = "woodruff"):
     return page_generator.generate_channels_page(get_channels())
@@ -127,7 +172,8 @@ def create_post(channel: str = None, title: str = Form(...), content: str = Form
 @app.post("/api/reply")
 def create_reply(reply_id: int, channel: str, reply: str = Form(...)):
     make_post(reply_id, "me", None, reply, channel)
-    return RedirectResponse(url=f"/channel/{channel}", status_code=303)
+    root_id = trace_root(get_post(reply_id))
+    return RedirectResponse(url=f"/post/{root_id}", status_code=303)
 
 @app.post("/api/channel")
 def create_channel(name: str = Form(...), description: str = Form(...)):
