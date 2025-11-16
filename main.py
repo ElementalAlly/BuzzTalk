@@ -84,9 +84,23 @@ def make_post(parent_id: int, username: str, title: str, body: str, channel: str
             (parent_id, channel, post_time, username, title, body)
             VALUES
             ({parent_id}, '{channel}', CURRENT_TIMESTAMP, '{username}', '{title}', '{body}');"""
-            print(query)
             cursor.execute(query)
         connection.commit()
+
+def make_channel(name: str, description: str):
+    connection = pymysql.connect(host="localhost",
+                                 user=LOCAL_USER,
+                                 password=LOCAL_PASSWORD,
+                                 database="BuzzTalk")
+    with connection:
+        with connection.cursor() as cursor:
+            query = f"""INSERT INTO woodruff_channels 
+            (name, description)
+            VALUES
+            ('{name}', '{description}')"""
+            cursor.execute(query)
+        connection.commit()
+
 
 @app.get("/", response_class=RedirectResponse)
 def read_root():
@@ -96,6 +110,8 @@ def read_root():
 async def view_posts(channel_name: str):
     if channel_name == None:
         channel_name = "general"
+    if channel_name not in get_channels():
+        return HTMLResponse(status_code=404)
     db = get_posts(0, channel_name)
     return page_generator.generate_posts_page(db, channel_name, get_channels())
 
@@ -112,6 +128,11 @@ def create_post(channel: str = None, title: str = Form(...), content: str = Form
 def create_reply(reply_id: int, channel: str, reply: str = Form(...)):
     make_post(reply_id, "me", None, reply, channel)
     return RedirectResponse(url=f"/channel/{channel}", status_code=303)
+
+@app.post("/api/channel")
+def create_channel(name: str = Form(...), description: str = Form(...)):
+    make_channel(name, description)
+    return RedirectResponse(url="/make_channel", status_code=303)
 
 @app.get("/logo")
 def get_logo():
