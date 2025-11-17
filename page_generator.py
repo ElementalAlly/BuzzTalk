@@ -31,7 +31,7 @@ def traverse_post(post: Post, layer: int, channel: str):
     for i in range(len(post.replies)):
         result = result + traverse_post(post.replies[i], layer + 1, channel)
     
-    result  = result + "</div>"
+    result  = result + "</a>"
     return result
 
 def process_channel(channel: str):
@@ -42,7 +42,8 @@ def process_channel(channel: str):
 def generate_posts_page(db: List[Post], channel: str, channels: List[str]):
     posts_html = ""
     for post in reversed(db):  # Show new posts at the top
-        posts_html += traverse_post(post, 0, channel)
+        with open("HTML_templates\\main_post.txt") as f:
+            posts_html += f.read().format(id = post.id, title = post.title, body = post.body)
 
     with open("HTML_templates\\post_w_comments.txt") as f:
         page_content = f.read().format(channel = channel, posts_html = posts_html)

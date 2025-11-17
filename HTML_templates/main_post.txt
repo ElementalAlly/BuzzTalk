@@ -1,11 +1,6 @@
-<div class="comment" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
-    <h3>{title} (ID: {id}, layer: {layer})</h3>
-    <p>{body}</p>
-    <button class="reply-button">Reply</button>
-    <div class="reply-box" style="display: none;">
-        <form action="/api/reply?reply_id={id}&channel={channel}", method="post">
-            <textarea name="reply" rows="4" placeholder="Post Reply" required></textarea><br>
-            <button type="submit">Post</button>
-        </form>
-        <button class="cancel">Cancel</button>
+<a href="/post/{id}">
+    <div class="comment" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+        <h3>{title} (ID: {id})</h3>
+        <p>{body}</p>
     </div>
+</a>
