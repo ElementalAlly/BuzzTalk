@@ -1,8 +1,8 @@
 import os
-from fastapi import FastAPI, Form
+from fastapi import FastAPI, Form, Cookie
 from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
 from pydantic import BaseModel, ConfigDict
-from typing import List
+from typing import List, Annotated
 import pymysql.cursors
 import datetime
 
@@ -112,6 +112,8 @@ def get_channels(server: str = "woodruff") -> List[str]:
     return result
 
 def make_post(parent_id: int, username: str, title: str, body: str, channel: str):
+    if username == None or username == "":
+        username = "Anonymous"
     connection = pymysql.connect(host="localhost",
                                  user=LOCAL_USER,
                                  password=LOCAL_PASSWORD,
@@ -144,38 +146,63 @@ def trace_root(post: Post) -> int:
         post = get_post(post.parent_id)
     return post.id
 
+def sign_up(username: str):
+    username_ind = 0
+    connection = pymysql.connect(host="localhost",
+                                 user=LOCAL_USER,
+                                 password=LOCAL_PASSWORD,
+                                 database="BuzzTalk")
+    with connection:
+        with connection.cursor() as cursor:
+            query = f"""SELECT * FROM registry
+            WHERE username='{username}';"""
+            cursor.execute(query)
+            raw_data = list(cursor.fetchall())
+
+            if len(raw_data) == 0:
+                query = f"""INSERT INTO registry 
+                (username)
+                VALUES
+                ('{username}')"""
+                cursor.execute(query)
+        connection.commit()
+
 @app.get("/", response_class=RedirectResponse)
 def read_root():
     return "/channel/general"
 
 @app.get("/channel/{channel_name}")
-async def view_posts(channel_name: str):
+async def view_posts(channel_name: str, username: Annotated[str | None, Cookie()] = None):
     if channel_name == None:
         channel_name = "general"
     if channel_name not in get_channels():
         return HTMLResponse(status_code=404)
     db = get_posts(0, channel_name)
-    return page_generator.generate_posts_page(db, channel_name, get_channels())
+    return page_generator.generate_posts_page(db, channel_name, get_channels(), username = username)
 
 @app.get("/post/{id}")
-async def view_post(id: int):
+async def view_post(id: int, username: Annotated[str | None, Cookie()] = None):
     post: Post = get_post(id)
     if post == None:
         return HTMLResponse(status_code=404)
-    return page_generator.generate_post_focus_page(post, post.channel, get_channels())
+    return page_generator.generate_post_focus_page(post, post.channel, get_channels(), username = username)
 
 @app.get("/make_channel", response_class=HTMLResponse)
-async def get_channels_page(server: str = "woodruff"):
-    return page_generator.generate_channels_page(get_channels())
+async def get_channels_page(server: str = "woodruff", username: Annotated[str | None, Cookie()] = None):
+    return page_generator.generate_channels_page(get_channels(), username = username)
+
+@app.get("/sign_in", response_class=HTMLResponse)
+async def get_sign_in_page(username: Annotated[str | None, Cookie()] = None):
+    return page_generator.generate_sign_in_page(get_channels(), username)
 
 @app.post("/api/posts")
-def create_post(channel: str = None, title: str = Form(...), content: str = Form(...)):
-    make_post(0, "you", title, content, channel)
+def create_post(channel: str = None, title: str = Form(...), content: str = Form(...), username: Annotated[str | None, Cookie()] = None):
+    make_post(0, username, title, content, channel)
     return RedirectResponse(url=f"/channel/{channel}", status_code=303)
 
 @app.post("/api/reply")
-def create_reply(reply_id: int, channel: str, reply: str = Form(...)):
-    make_post(reply_id, "me", None, reply, channel)
+def create_reply(reply_id: int, channel: str, reply: str = Form(...), username: Annotated[str | None, Cookie()] = None):
+    make_post(reply_id, username, None, reply, channel)
     root_id = trace_root(get_post(reply_id))
     return RedirectResponse(url=f"/post/{root_id}", status_code=303)
 
@@ -183,6 +210,19 @@ def create_reply(reply_id: int, channel: str, reply: str = Form(...)):
 def create_channel(name: str = Form(...), description: str = Form(...)):
     make_channel(name, description)
     return RedirectResponse(url="/make_channel", status_code=303)
+
+@app.post("/api/sign_in")
+def sign_in(username: str = Form(...)):
+    sign_up(username)
+    response = RedirectResponse(url="/sign_in", status_code=303)
+    response.set_cookie(key="username", value=username)
+    return response
+
+@app.post("/api/sign_out")
+def sign_out():
+    response = RedirectResponse(url="/sign_in", status_code=303)
+    response.delete_cookie(key="username")
+    return response
 
 @app.get("/logo")
 def get_logo():

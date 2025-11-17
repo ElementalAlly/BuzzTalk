@@ -1,0 +1,6 @@
+<h1>Log in / Sign up</h1>
+<h3>{status}</h3>
+<form action="/api/sign_in" method="post">
+    <input type=text name="username" placeholder="Username" required><br>
+    <button type="submit">Log In / Sign Up!</button>
+</form>
