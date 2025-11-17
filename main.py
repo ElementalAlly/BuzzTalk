@@ -4,6 +4,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
 from pydantic import BaseModel, ConfigDict
 from typing import List
 import pymysql.cursors
+import datetime
 
 import page_generator
 
@@ -13,6 +14,7 @@ class Post(BaseModel):
     parent_id: int
     channel: str
     username: str
+    timestamp: str
     title: str
     body: str
     replies: []
@@ -51,6 +53,7 @@ def get_post(id: int) -> Post:
                            parent_id=entry[parent_id_ind],
                            channel=entry[channel_ind],
                            username=entry[username_ind],
+                           timestamp=entry[post_time_ind].strftime('%m/%d/%Y %I:%M:%S %p'),
                            title=entry[title_ind],
                            body=entry[body_ind],
                            replies=get_posts(entry[post_id_ind], entry[channel_ind]))
@@ -82,6 +85,7 @@ def get_posts(parent: int, channel: str) -> List[Post]:
                            parent_id=entry[parent_id_ind],
                            channel=entry[channel_ind],
                            username=entry[username_ind],
+                           timestamp=entry[post_time_ind].strftime('%m/%d/%Y %I:%M:%S %p'),
                            title=entry[title_ind],
                            body=entry[body_ind],
                            replies=get_posts(entry[post_id_ind], channel)))

@@ -8,6 +8,7 @@ class Post(BaseModel):
     parent_id: int
     channel: str
     username: str
+    timestamp: str
     title: str
     body: str
     replies: []
@@ -22,12 +23,8 @@ def page_w_content(content: str, channels: List[str]):
 
 def traverse_post(post: Post, layer: int, channel: str):
     result = ""
-    if layer == 0:
-        with open("HTML_templates\\main_post.txt") as f:
-            result = f.read().format(title = post.title, id = post.id, layer = layer, body = post.body, channel = channel)
-    else:
-        with open("HTML_templates\\reply_post.txt") as f:
-            result = f.read().format(id = post.id, layer = layer, body = post.body, channel = channel)
+    with open("HTML_templates\\reply_post.txt") as f:
+        result = f.read().format(id = post.id, layer = layer, body = post.body, channel = channel)
     for i in range(len(post.replies)):
         result = result + traverse_post(post.replies[i], layer + 1, channel)
     
@@ -43,7 +40,7 @@ def generate_posts_page(db: List[Post], channel: str, channels: List[str]):
     posts_html = ""
     for post in reversed(db):  # Show new posts at the top
         with open("HTML_templates\\main_post.txt") as f:
-            posts_html += f.read().format(id = post.id, title = post.title, body = post.body)
+            posts_html += f.read().format(username = post.username, timestamp = post.timestamp, id = post.id, title = post.title, body = post.body)
 
     with open("HTML_templates\\post_w_comments.txt") as f:
         page_content = f.read().format(channel = channel, posts_html = posts_html)

@@ -2,6 +2,14 @@
     <head>
         <title>My FastAPI Forum</title>
         <style>
+            a {{
+                color: black;
+                text-decoration: none;
+            }}
+            .comment {{
+                color: black;
+                text-decoration: none;
+            }}
             body {{ font-family: sans-serif; margin: 2em; }}
             input, textarea {{ width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box; }}
             button {{ padding: 10px 15px; background-color: #007BFF; color: white; border: none; cursor: pointer; }}

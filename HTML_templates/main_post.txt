@@ -1,6 +1,7 @@
 <a href="/post/{id}">
     <div class="comment" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
-        <h3>{title} (ID: {id})</h3>
+        <p style="font-weight: bold;">{username} posted at {timestamp}</p>
+        <h2>{title} (ID: {id})</h2>
         <p>{body}</p>
     </div>
 </a>
