@@ -2,49 +2,81 @@
     <head>
         <title>My FastAPI Forum</title>
         <style>
+            /* ---------------------------------- */
+            /* COLOR PALETTE (BuzzTalk Style)     */
+            /* ---------------------------------- */
+            /*
+                Background:        #0d0d0d (blackish)
+                Panel / Sidebar:   #111 (deep charcoal)
+                Accent Gold:       #f4c542
+                Text Bright:       #ffffff
+                Text Dim:          #aaaaaa
+                Hover Highlight:   #1a1a1a
+                Border Soft:       #222
+            */
+
+            /* ---------------------------------- */
+            /* GLOBAL ELEMENTS                    */
+            /* ---------------------------------- */
+
             a {{
-                color: black;
+                color: #f4c542; /* gold */
                 text-decoration: none;
             }}
+
             .comment {{
-                color: black;
+                color: #ffffff;
                 text-decoration: none;
             }}
-            body {{ 
-                font-family: sans-serif; 
-                margin: 2em; 
+
+            body {{
+                font-family: 'Inter', sans-serif;
+                margin: 2em;
+                background-color: #0d0d0d;
+                color: #ffffff;
             }}
+
             input, textarea {{
                 width: 100%; 
                 padding: 8px; 
                 margin-bottom: 10px; 
                 box-sizing: border-box;
+                background-color: #111;
+                border: 1px solid #222;
+                color: #ffffff;
             }}
-            button {{ 
+
+            button {{
                 padding: 10px 15px; 
-                background-color: #007BFF; 
-                color: white; 
+                background-color: #f4c542; 
+                color: #000; 
                 border: none; 
                 cursor: pointer; 
+                border-radius: 4px;
+                font-weight: bold;
             }}
-            button:hover {{ 
-                background-color: #0056b3; 
+            button:hover {{
+                background-color: #d8ab33;
             }}
+
             .content {{
                 margin-top: 70px;
                 padding: 16px;
             }}
-            /* ------------------------------ */
-            /* TOP NAVIGATION BAR            */
-            /* ------------------------------ */
+
+
+            /* ---------------------------------- */
+            /* TOP NAVIGATION BAR                 */
+            /* ---------------------------------- */
+
             .navbar {{
                 width: 99%;
-                background-color: #ffffff;
+                background-color: #111;
                 height: 56px;
                 display: flex;
                 align-items: center;
                 padding: 0 16px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                border-bottom: 1px solid #222;
                 position: fixed;
                 top: 0;
                 left: 0;
@@ -53,20 +85,28 @@
 
             .navbar-logo {{
                 height: 50px;
-                width:auto;
+                width: auto;
                 object-fit: contain;
+                margin-left: 8px;
                 margin-right: auto;
             }}
 
+            /* Black sandwich menu icon */
             .menu-button {{
-                font-size: 24px;
+                font-size: 26px;
                 cursor: pointer;
                 border: none;
                 background: none;
-                color: #000;
+                color: #ffffff;
                 font-weight: 700;
+                padding: 4px 8px;
             }}
 
+            .menu-button:hover {{
+                color: #f4c542;
+            }}
+
+            /* Logout button styling (gold theme) */
             .navbar form {{
                 margin: 0;
                 display: flex;
@@ -75,31 +115,32 @@
 
             .logout-button {{
                 padding: 8px 16px;
-                background: #d9534f;
-                color: white;
+                background: #f4c542;
+                color: #000;
                 border: none;
-                border-radius: 4px;
+                border-radius: 6px;
                 cursor: pointer;
+                font-weight: bold;
             }}
-
             .logout-button:hover {{
-                background: #c9302c;
+                background: #d8ab33;
             }}
 
 
-            /* ------------------------------ */
-            /* SIDEBAR                       */
-            /* ------------------------------ */
+            /* ---------------------------------- */
+            /* SIDEBAR                            */
+            /* ---------------------------------- */
+
             .sidebar {{
                 position: fixed;
                 top: 56px; /* below nav bar */
                 left: 0;
                 width: 0;
                 height: 100%;
-                background-color: #ffffff;
+                background-color: #111;
                 overflow-x: hidden;
                 transition: width 0.3s ease;
-                border-right: 1px solid #ccc;
+                border-right: 1px solid #222;
                 padding-top: 20px;
                 z-index: 999;
             }}
@@ -112,14 +153,22 @@
                 display: block;
                 padding: 12px 20px;
                 text-decoration: none;
-                color: #333;
+                color: #ffffff;
                 font-size: 16px;
+                border-radius: 6px;
+                margin: 4px 10px;
             }}
 
             .sidebar a:hover {{
-                background-color: #f0f0f0;
+                background-color: #1a1a1a;
             }}
-        </style>
+
+            /* Active selection highlight (gold pill look) */
+            .sidebar .active {{
+                background-color: #f4c542;
+                color: #000;
+            }}
+        </style
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
