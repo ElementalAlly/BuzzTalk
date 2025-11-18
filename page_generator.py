@@ -34,7 +34,7 @@ def traverse_post(post: Post, layer: int, channel: str):
     for i in range(len(post.replies)):
         result = result + traverse_post(post.replies[i], layer + 1, channel)
     
-    result  = result + "</a>"
+    result  = result + "</div>"
     return result
 
 def process_channel(channel: str):
