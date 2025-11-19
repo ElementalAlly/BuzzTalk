@@ -37,9 +37,9 @@ def traverse_post(post: Post, layer: int, channel: str):
     result  = result + "</div>"
     return result
 
-def process_channel(channel: str):
+def process_channel(name: str, description: str):
     with open("HTML_templates\\channel_listing.txt") as f:
-        result = f.read().format(channel = channel)
+        result = f.read().format(channel = name, description = description)
     return result
 
 def generate_posts_sidebar(db: List[Post]):
@@ -69,10 +69,10 @@ def generate_posts_page(db: List[Post], channel: str, description: str, channels
         page_content = f.read().format(channel = channel, posts_html = posts_html)
     return page_w_content(page_content, channels=channels, username = username, right_sidebar=generate_channel_sidebar(channel, description))
 
-def generate_channels_page(channels: List[str], server: str = "woodruff", username: str = None):
+def generate_channels_page(channels, server: str = "woodruff", username: str = None):
     channels_html = ""
-    for channel in channels:
-        channels_html += process_channel(channel)
+    for name, description in channels.items():
+        channels_html += process_channel(name, description)
 
     with open("HTML_templates\\make_channel.txt") as f:
         page_content = f.read().format(server = server, channels_html = channels_html)

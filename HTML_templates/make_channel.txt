@@ -6,4 +6,5 @@
 </form>
 <hr>
 <h2>Channel list: {server}</h2>
+<hr>
 {channels_html}

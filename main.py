@@ -193,7 +193,7 @@ async def view_post(id: int, username: Annotated[str | None, Cookie()] = None):
 
 @app.get("/make_channel", response_class=HTMLResponse)
 async def get_channels_page(server: str = "woodruff", username: Annotated[str | None, Cookie()] = None):
-    return page_generator.generate_channels_page(list(get_channels().keys()), username = username)
+    return page_generator.generate_channels_page(get_channels(), username = username)
 
 @app.get("/sign_in", response_class=HTMLResponse)
 async def get_sign_in_page(username: Annotated[str | None, Cookie()] = None):
