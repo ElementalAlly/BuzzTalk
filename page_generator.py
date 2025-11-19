@@ -48,7 +48,7 @@ def generate_posts_page(db: List[Post], channel: str, channels: List[str], usern
         with open("HTML_templates\\main_post.txt") as f:
             posts_html += f.read().format(username = post.username, timestamp = post.timestamp, id = post.id, title = post.title, body = post.body)
 
-    with open("HTML_templates\\post_w_comments.txt") as f:
+    with open("HTML_templates\\channel_view.txt") as f:
         page_content = f.read().format(channel = channel, posts_html = posts_html)
     return page_w_content(page_content, channels=channels, username = username)
 

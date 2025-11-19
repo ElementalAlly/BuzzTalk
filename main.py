@@ -180,6 +180,10 @@ async def view_posts(channel_name: str, username: Annotated[str | None, Cookie()
     db = get_posts(0, channel_name)
     return page_generator.generate_posts_page(db, channel_name, get_channels(), username = username)
 
+@app.get("/channel/{channel_name}/media")
+async def view_media(channel_name: str):
+    return {"Message": "Work in Progress"}
+
 @app.get("/post/{id}")
 async def view_post(id: int, username: Annotated[str | None, Cookie()] = None):
     post: Post = get_post(id)
@@ -194,6 +198,10 @@ async def get_channels_page(server: str = "woodruff", username: Annotated[str | 
 @app.get("/sign_in", response_class=HTMLResponse)
 async def get_sign_in_page(username: Annotated[str | None, Cookie()] = None):
     return page_generator.generate_sign_in_page(get_channels(), username)
+
+@app.get("/profile/{profile_id}")
+async def view_profile(profile_id: int):
+    return {"Message": "Work in progress"}
 
 @app.post("/api/posts")
 def create_post(channel: str = None, title: str = Form(...), content: str = Form(...), username: Annotated[str | None, Cookie()] = None):

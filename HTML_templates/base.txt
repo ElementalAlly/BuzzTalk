@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>My FastAPI Forum</title>
+        <title>BuzzTalk</title>
         <style>
             /* ---------------------------------- */
             /* COLOR PALETTE (BuzzTalk Style)     */
