@@ -1,5 +1,5 @@
 <div class="comment">
-    <h1>{title} (ID: {id})</h1>
+    <h1>{title}</h1>
     <h3>Posted by {username} at {timestamp}</h3>
     <p>{body}</p>
     <button class="reply-button">Reply</button>

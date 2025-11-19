@@ -13,7 +13,7 @@ class Post(BaseModel):
     body: str
     replies: []
 
-def page_w_content(content: str, channels: List[str], username: str = ""):
+def page_w_content(content: str, channels: List[str], username: str = "", right_sidebar: str = ""):
     channel_list = ""
     for channel in channels:
         channel_list += f"<a href='/channel/{channel}'>{channel}</a>"
@@ -24,7 +24,7 @@ def page_w_content(content: str, channels: List[str], username: str = ""):
         login_status = f"Signed in as: {username}"
         logout_visible = "blocked"
     with open("HTML_templates\\base.txt") as f:
-        html_content = f.read().format(content = content, channels = channel_list, login_status = login_status, logout_visible = logout_visible)
+        html_content = f.read().format(content = content, channels = channel_list, right_sidebar=right_sidebar, login_status = login_status, logout_visible = logout_visible)
     return HTMLResponse(content=html_content, status_code=200)
 
 def traverse_post(post: Post, layer: int, channel: str):
@@ -42,7 +42,24 @@ def process_channel(channel: str):
         result = f.read().format(channel = channel)
     return result
 
-def generate_posts_page(db: List[Post], channel: str, channels: List[str], username: str = None):
+def generate_posts_sidebar(db: List[Post]):
+    posts_html = ""
+    for post in reversed(db):
+        with open("HTML_templates\\main_post.txt") as f:
+            posts_html += f.read().format(username = post.username, timestamp = post.timestamp, id = post.id, title = post.title, body = post.body)
+    
+    with open("HTML_templates\\post_focus_sidebar.txt") as f:
+        sidebar_content = f.read().format(posts_html = posts_html)
+    
+    return sidebar_content
+
+def generate_channel_sidebar(name: str, description: str):
+    with open("HTML_templates\\channel_right_sidebar.txt") as f:
+        sidebar_content = f.read().format(name = name, description = description)
+    
+    return sidebar_content
+
+def generate_posts_page(db: List[Post], channel: str, description: str, channels: List[str], username: str = None):
     posts_html = ""
     for post in reversed(db):  # Show new posts at the top
         with open("HTML_templates\\main_post.txt") as f:
@@ -50,7 +67,7 @@ def generate_posts_page(db: List[Post], channel: str, channels: List[str], usern
 
     with open("HTML_templates\\channel_view.txt") as f:
         page_content = f.read().format(channel = channel, posts_html = posts_html)
-    return page_w_content(page_content, channels=channels, username = username)
+    return page_w_content(page_content, channels=channels, username = username, right_sidebar=generate_channel_sidebar(channel, description))
 
 def generate_channels_page(channels: List[str], server: str = "woodruff", username: str = None):
     channels_html = ""
@@ -61,7 +78,7 @@ def generate_channels_page(channels: List[str], server: str = "woodruff", userna
         page_content = f.read().format(server = server, channels_html = channels_html)
     return page_w_content(page_content, channels = channels, username = username)
 
-def generate_post_focus_page(post: Post, channel: str, channels: List[str], username: str = None):
+def generate_post_focus_page(db: List[Post], post: Post, channel: str, channels: List[str], username: str = None):
     with open("HTML_templates\\post_focus.txt") as f:
         page_content = f.read()
     
@@ -70,7 +87,7 @@ def generate_post_focus_page(post: Post, channel: str, channels: List[str], user
         posts_html = posts_html + traverse_post(_post, 1, channel)
     page_content = page_content.format(title = post.title, id = post.id, username = post.username, timestamp = post.timestamp, body=post.body, channel=channel, posts_html=posts_html)
 
-    return page_w_content(page_content, channels = channels, username = username)
+    return page_w_content(page_content, channels = channels, username = username, right_sidebar=generate_posts_sidebar(db))
 
 def generate_sign_in_page(channels: List[str], username: str = None):
     if username == None:

@@ -1,0 +1,48 @@
+<style>
+/* ---------------------------------- */
+/* RIGHT SIDEBAR (always visible)     */
+/* ---------------------------------- */
+
+.right-sidebar {{
+    position: fixed;
+    top: 56px;                 /* Below the navbar */
+    right: 0;
+    width: 20%;              /* Adjust as needed */
+    height: calc(100% - 56px);
+    background-color: #111;
+    border-left: 1px solid #222;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    z-index: 900;              /* Below navbar, above content */
+}}
+
+/* Right sidebar text styles */
+.right-sidebar h2 {{
+    color: #f4c542;
+    font-size: 20px;
+    margin-bottom: 12px;
+}}
+
+.right-sidebar a {{
+    display: block;
+    color: #ffffff;
+    text-decoration: none;
+    margin-bottom: 10px;
+    padding: 6px 4px;
+    border-radius: 4px;
+}}
+
+.right-sidebar a:hover {{
+    background-color: #1a1a1a;
+}}
+
+.content {{
+    margin-right: 23%;   /* Sidebar width + padding */
+}}
+</style>
+<div class="right-sidebar">
+    <h2>{name}</h2>
+    <hr>
+    <p>{description}</p>
+</div>

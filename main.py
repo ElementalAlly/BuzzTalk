@@ -92,7 +92,7 @@ def get_posts(parent: int, channel: str) -> List[Post]:
 
     return result
 
-def get_channels(server: str = "woodruff") -> List[str]:
+def get_channels(server: str = "woodruff"):
     name_ind = 0
     description_ind = 1
     connection = pymysql.connect(host="localhost",
@@ -105,9 +105,9 @@ def get_channels(server: str = "woodruff") -> List[str]:
             cursor.execute(query)
             raw_data = list(cursor.fetchall())
 
-    result: List[str] = []
-    for entry in raw_data:
-        result.append(entry[name_ind])
+    result = {}
+    for (name, description) in raw_data:
+        result[name] = description
     
     return result
 
@@ -175,10 +175,10 @@ def read_root():
 async def view_posts(channel_name: str, username: Annotated[str | None, Cookie()] = None):
     if channel_name == None:
         channel_name = "general"
-    if channel_name not in get_channels():
+    if channel_name not in list(get_channels().keys()):
         return HTMLResponse(status_code=404)
     db = get_posts(0, channel_name)
-    return page_generator.generate_posts_page(db, channel_name, get_channels(), username = username)
+    return page_generator.generate_posts_page(db, channel_name, get_channels()[channel_name], get_channels(), username = username)
 
 @app.get("/channel/{channel_name}/media")
 async def view_media(channel_name: str):
@@ -189,15 +189,15 @@ async def view_post(id: int, username: Annotated[str | None, Cookie()] = None):
     post: Post = get_post(id)
     if post == None:
         return HTMLResponse(status_code=404)
-    return page_generator.generate_post_focus_page(post, post.channel, get_channels(), username = username)
+    return page_generator.generate_post_focus_page(get_posts(0, channel=post.channel), post, post.channel, list(get_channels().keys()), username = username)
 
 @app.get("/make_channel", response_class=HTMLResponse)
 async def get_channels_page(server: str = "woodruff", username: Annotated[str | None, Cookie()] = None):
-    return page_generator.generate_channels_page(get_channels(), username = username)
+    return page_generator.generate_channels_page(list(get_channels().keys()), username = username)
 
 @app.get("/sign_in", response_class=HTMLResponse)
 async def get_sign_in_page(username: Annotated[str | None, Cookie()] = None):
-    return page_generator.generate_sign_in_page(get_channels(), username)
+    return page_generator.generate_sign_in_page(list(get_channels().keys()), username)
 
 @app.get("/profile/{profile_id}")
 async def view_profile(profile_id: int):
