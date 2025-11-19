@@ -1,4 +1,4 @@
-<div class="comment" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+<div class="comment" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; margin-top: 10px;">
     <h3>{username} replied at {timestamp}</h3>
     <p>{body}</p>
     <button class="reply-button">Reply</button>
