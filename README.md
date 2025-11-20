@@ -25,6 +25,12 @@ user="root"
 password="{insert password here, no braces}"
 ```
 
+To run the app from the repository folder root, run the following command:
+
+```
+uvicorn main:app --reload --host 127.0.0.1 --port 80
+```
+
 # Todo
 
  - Make different servers, with different tables (registry, messages) for every server.
@@ -34,6 +40,7 @@ password="{insert password here, no braces}"
  - Add restricted servers/channels
  - Add media links and pages.
  - Use a proper templating engine like Jinja for html pages instead of crappy txt files in html lol
+ - Establish a central server for the app to run long-term
  - Make this mobile-friendly
 
 ## far future
