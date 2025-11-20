@@ -42,5 +42,8 @@
 }}
 </style>
 <div class="right-sidebar">
+    <h2>
+        Other posts in <a href="/channel/{channel}">{channel}</a>
+    </h2>
     {posts_html}
 </div>

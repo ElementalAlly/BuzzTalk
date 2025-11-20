@@ -49,7 +49,7 @@ def generate_posts_sidebar(db: List[Post]):
             posts_html += f.read().format(username = post.username, timestamp = post.timestamp, id = post.id, title = post.title, body = post.body)
     
     with open("HTML_templates\\post_focus_sidebar.txt") as f:
-        sidebar_content = f.read().format(posts_html = posts_html)
+        sidebar_content = f.read().format(posts_html = posts_html, channel=db[0].channel)
     
     return sidebar_content
 
